@@ -1,0 +1,5 @@
+Sticky Physics 3D	V1.0
+
+
+"World to Screen Projection Transformation"
+is Translated to VB6 in modCamera2.bas
