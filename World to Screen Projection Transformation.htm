@@ -1,0 +1,114 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<link rel="StyleSheet" href="World%20to%20Screen%20Projection%20Transformation_files/pdbstyle.css" type="text/css" media="all">
+<title>World to Screen Projection Transformation</title>
+</head><body bgcolor="#ffffff">
+
+<center>
+<h1>World to Screen Projection Transformation</h1>
+Written by <a href="http://local.wasp.uwa.edu.au/%7Epbourke/miscellaneous/">Paul Bourke</a><br>
+December 1994
+</center>
+
+<p></p><hr><p>
+
+The representation by computer of 3 dimensional forms is normally restricted to
+the projection onto a plane, namely the 2 dimensional computer screen or
+hardcopy device. The following is a procedure that transforms points in 3
+dimensional space to screen coordinates given a particular coordinate system,
+camera and projection plane models. This discussion describes the mathematics
+required for a perspective projection including clipping to the projection
+pyramid with a front and back cutting plane. It assumes the projection plane to
+be perpendicular to the view direction vector and thus it does not allow for
+oblique projections.</p><p>
+Included in the appendices is source code (written in the C programming
+language) implementing all the processes described.</p><p>
+
+<b>Coordinate system</b><br>
+In what follows a so called right handed coordinate system is used, it has the
+positive x axis to the right, the positive z axis upward, and the positive y
+axis forward (into the screen or page).
+<br>
+</p><center><img src="World%20to%20Screen%20Projection%20Transformation_files/transform1.gif"></center>
+<p>
+Conversion between this and other coordinate systems simply involves the
+swapping and/or negation of the appropriate coordinates..</p><p>
+
+<b>Camera model</b><br>
+The camera is fundamentally defined by its position (from), a point along the
+positive view direction vector (to), a vector defining "up" (up), and a
+horizontal and vertical aperture (angleh, anglev).</p><p>
+These parameters are illustrated in the following figure.
+<br>
+</p><center><img src="World%20to%20Screen%20Projection%20Transformation_files/transform2.gif"></center>
+<p>
+One obvious restriction is that the view direction must not be collinear with
+the up vector. In practical implementations, including the one given in the
+appendices, the up vector need not be a unit vector.</p><p>
+Other somewhat artificial variables in the camera model used here are front and
+back clipping planes, a perspective/oblique projection flag, and a
+multiplicative zoom factor. The clipping planes are defined as positive
+distances along the view direction vector, in other words they are
+perpendicular to the view direction vector. As expected all geometry before the
+front plane and beyond the back plane is not visible. All geometry which
+crosses these planes is clipped to the appropriate plane. Thus geometry visible
+to a camera as described here lies within a truncated pyramid.
+<br>
+</p><center><img src="World%20to%20Screen%20Projection%20Transformation_files/transform3.gif"></center>
+<p>
+
+<b>Screen model</b><br>
+The projection plane (computer screen or hardcopy device) can be defined in
+many ways. Here the central point, width and height are used. The following
+will further assume the unfortunate convention, common in computer graphics
+practice, that the positive vertical axis is downward. The coordinates of the
+projection space will be referred to as (h,v).
+<br>
+</p><center><img src="World%20to%20Screen%20Projection%20Transformation_files/transform4.gif"></center>
+<p>
+Note that normally in computer windowing systems the window area is defined as
+an rectangle between two points (left,top) and (right,bottom). Transforming
+this description into the definition used here is trivial, namely<br>
+   horizontal center = (left + right) / 2<br>
+   vertical center = (top + bottom) / 2<br>
+   width = right - left<br>
+   height = bottom - top</p><p>
+The units need not be specified although they are generally pixel's, it is
+assumed that there are drawing routines in the same units. It is also assumed
+that the computer screen has a 1:1 aspect ratio, a least as far as the drawing
+routines are concerned</p><p>
+A relationship could be made between the ratio of the horizontal and vertical
+camera aperture and the horizontal and vertical ratio of the display area. Here
+it will be assumed that the display area (eg: window) has the same proportions
+as the ratio of the camera aperture. In practice this simply means that when
+the camera aperture is modified, the window size is also modified so as to
+retain the correct proportions.</p><p>
+
+<b>Algorithm</b><br>
+The procedure for determining where a 3D point in world coordinates would
+appear on the screen is as follows:
+<br>
+</p><center><img src="World%20to%20Screen%20Projection%20Transformation_files/transform5.gif"></center>
+<p>
+Transforming a line segment involves determining which piece, if any, of the
+line segment intersects the view volume. The logic is shown below.
+<br>
+</p><center><img src="World%20to%20Screen%20Projection%20Transformation_files/transform6.gif"></center>
+<p>
+
+<b>Clipping</b><br>
+Two separate clipping processes occur. The first is clipping to the front and
+back clipping planes and is done after transforming to eye coordinates. The
+second is clipping to the view pyramid and is performed after transforming to
+normalised coordinates at which point it is necessary to clip 2D line segments
+to a square centered at the origin of length and height of 2.
+<br>
+</p><center><img src="World%20to%20Screen%20Projection%20Transformation_files/transform7.gif"></center>
+<p>
+
+<b>Source code</b><br>
+<a href="http://local.wasp.uwa.edu.au/%7Epbourke/miscellaneous/transform/transform.c">transform.c</a>, 
+<a href="http://local.wasp.uwa.edu.au/%7Epbourke/miscellaneous/transform/transform.h">transform.h</a>.
+
+</p></body></html>
